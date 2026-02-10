@@ -5,7 +5,7 @@ A CLI for interacting with ClickUp — tasks, lists, spaces, comments, time trac
 ## Install
 
 ```bash
-nix profile install github:otard95/clickup-cli
+nix profile add github:otard95/clickup-cli
 ```
 
 Or from source:
