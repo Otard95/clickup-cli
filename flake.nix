@@ -1,5 +1,5 @@
 {
-  description = "clickup - CLI for interacting with ClickUp";
+  description = "clickup-cli - CLI for interacting with ClickUp";
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   inputs.systems.url = "github:nix-systems/default";
   inputs.flake-utils = {
@@ -8,7 +8,7 @@
   };
 
   outputs =
-    { nixpkgs, flake-utils, ... }:
+    { self, nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
@@ -23,12 +23,12 @@
         };
 
         packages.default = pkgs.buildGoModule {
-          pname = "clickup";
+          pname = "clickup-cli";
           version = "0.1.0";
 
-          src = ./.;
+          src = self;
 
-          vendorHash = null; # will need updating after first `go mod vendor` or nix build
+          vendorHash = "sha256-7K17JaXFsjf163g5PXCb5ng2gYdotnZ2IDKk8KFjNj0=";
 
           subPackages = [ "." ];
 
