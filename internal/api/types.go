@@ -175,15 +175,43 @@ type TimeEntriesResponse struct {
 	Data []TimeEntry `json:"data"`
 }
 
-// Document represents a ClickUp document.
+// Document represents a ClickUp document (v3 API).
 type Document struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Content     string `json:"content"`
-	DateCreated string `json:"date_created"`
-	Creator     User   `json:"creator"`
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	DateCreated int64   `json:"date_created"`
+	DateUpdated int64   `json:"date_updated"`
+	Parent      *DocRef `json:"parent"`
+	Public      bool    `json:"public"`
+	WorkspaceID int     `json:"workspace_id"`
+	Creator     int     `json:"creator"`
+	Deleted     bool    `json:"deleted"`
+	Type        int     `json:"type"`
+}
+
+type DocRef struct {
+	ID   string `json:"id"`
+	Type int    `json:"type"`
 }
 
 type DocsResponse struct {
-	Docs []Document `json:"docs"`
+	Docs       []Document `json:"docs"`
+	NextCursor string     `json:"next_cursor"`
+}
+
+// DocPage represents a page within a ClickUp document (v3 API).
+type DocPage struct {
+	ID           string    `json:"id"`
+	DocID        string    `json:"doc_id"`
+	ParentPageID string    `json:"parent_page_id"`
+	WorkspaceID  int       `json:"workspace_id"`
+	Name         string    `json:"name"`
+	SubTitle     string    `json:"sub_title"`
+	Content      string    `json:"content"`
+	DateCreated  int64     `json:"date_created"`
+	DateUpdated  int64     `json:"date_updated"`
+	CreatorID    int       `json:"creator_id"`
+	Deleted      bool      `json:"deleted"`
+	Archived     bool      `json:"archived"`
+	Pages        []DocPage `json:"pages"`
 }

@@ -19,6 +19,14 @@ func FormatTimestamp(ms string) string {
 	return time.UnixMilli(n).Format("2006-01-02 15:04")
 }
 
+// FormatTimestampInt converts a millisecond Unix timestamp (int64) to a human-readable string.
+func FormatTimestampInt(ms int64) string {
+	if ms == 0 {
+		return ""
+	}
+	return time.UnixMilli(ms).Format("2006-01-02 15:04")
+}
+
 // FormatDurationMs converts milliseconds to a human-friendly duration.
 func FormatDurationMs(ms int64) string {
 	minutes := ms / 1000 / 60

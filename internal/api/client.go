@@ -12,7 +12,10 @@ import (
 	"github.com/otard95/clickup-cli/internal/config"
 )
 
-const baseURL = "https://api.clickup.com/api/v2"
+const (
+	baseURL   = "https://api.clickup.com/api/v2"
+	baseURLV3 = "https://api.clickup.com/api/v3"
+)
 
 type Client struct {
 	cfg  *config.Config
@@ -36,7 +39,15 @@ func (c *Client) TeamID() string {
 // params is a map of query parameters; values that are slices will be expanded
 // into repeated keys (e.g. "assignees[]" => ["1","2"]).
 func (c *Client) request(method, endpoint string, body io.Reader, params map[string]string, dest interface{}) error {
-	u, err := url.Parse(baseURL + endpoint)
+	return c.requestWithBase(baseURL, method, endpoint, body, params, dest)
+}
+
+func (c *Client) requestV3(method, endpoint string, body io.Reader, params map[string]string, dest interface{}) error {
+	return c.requestWithBase(baseURLV3, method, endpoint, body, params, dest)
+}
+
+func (c *Client) requestWithBase(base, method, endpoint string, body io.Reader, params map[string]string, dest interface{}) error {
+	u, err := url.Parse(base + endpoint)
 	if err != nil {
 		return fmt.Errorf("invalid endpoint: %w", err)
 	}
@@ -83,6 +94,10 @@ func (c *Client) request(method, endpoint string, body io.Reader, params map[str
 
 func (c *Client) Get(endpoint string, params map[string]string, dest interface{}) error {
 	return c.request(http.MethodGet, endpoint, nil, params, dest)
+}
+
+func (c *Client) GetV3(endpoint string, params map[string]string, dest interface{}) error {
+	return c.requestV3(http.MethodGet, endpoint, nil, params, dest)
 }
 
 func (c *Client) Put(endpoint string, body io.Reader, params map[string]string, dest interface{}) error {
