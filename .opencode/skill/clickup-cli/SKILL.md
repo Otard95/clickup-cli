@@ -193,20 +193,46 @@ clickup-cli time get 869b827uy      # entries for a task
 clickup-cli time get                  # all team entries
 ```
 
+### doc pages -- List pages in a document
+
+```bash
+clickup-cli doc pages <doc-id>
+```
+
+Displays the page tree with IDs and names. Use this to find page IDs for `doc read`.
+
+```bash
+clickup-cli doc pages 2g6xm-16448
+```
+
 ### doc read -- Read a document
 
 ```bash
-clickup-cli doc read <doc-id>
+clickup-cli doc read <doc-id> [page-id]
+```
+
+Without a page-id, displays all pages. With a page-id, displays only that page.
+
+```bash
+clickup-cli doc read 2g6xm-16448              # all pages
+clickup-cli doc read 2g6xm-16448 2g6xm-2908   # single page
 ```
 
 ### doc search -- Find documents
 
 ```bash
-clickup-cli doc search [query]
+clickup-cli doc search [query] [flags]
 ```
+
+| Flag | Short | Description |
+|------|-------|-------------|
+| `--max` | `-n` | Minimum number of results before stopping (default 25) |
+| `--cursor` | | Cursor from a previous search to continue paging |
 
 ```bash
 clickup-cli doc search "onboarding"
+clickup-cli doc search -n 5
+clickup-cli doc search --cursor <cursor> "onboarding"
 ```
 
 ## Common Workflows
@@ -250,6 +276,19 @@ clickup-cli task update MA-25578 -c -s "complete"
 
 # Add a subtask
 clickup-cli task subtask MA-25578 "Write tests" -c
+```
+
+### Work with documents
+
+```bash
+# Find a document
+clickup-cli doc search "Developer Foundations"
+
+# List its pages
+clickup-cli doc pages 2g6xm-16448
+
+# Read a specific page
+clickup-cli doc read 2g6xm-16448 2g6xm-2908
 ```
 
 ## Important Notes
