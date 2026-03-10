@@ -8,16 +8,19 @@ import (
 )
 
 var docReadCmd = &cobra.Command{
-	Use:   "read <doc-id>",
-	Short: "Read a ClickUp document by ID",
-	Long:  `Retrieve and display a ClickUp document's metadata and page content.`,
-	Args:  cobra.ExactArgs(1),
+	Use:   "read <doc-id> [page-id]",
+	Short: "Read a ClickUp document or a specific page",
+	Long: `Retrieve and display a ClickUp document's content.
+
+Without a page-id, displays all pages. With a page-id, displays only
+that page. Use "doc pages" to list available page IDs.`,
+	Args: cobra.RangeArgs(1, 2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		docID := args[0]
-		endpoint := fmt.Sprintf("/workspaces/%s/docs/%s", client.TeamID(), docID)
+		docEndpoint := fmt.Sprintf("/workspaces/%s/docs/%s", client.TeamID(), docID)
 
 		var doc api.Document
-		if err := client.GetV3(endpoint, nil, &doc); err != nil {
+		if err := client.GetV3(docEndpoint, nil, &doc); err != nil {
 			return fmt.Errorf("reading document: %w", err)
 		}
 
@@ -28,17 +31,25 @@ var docReadCmd = &cobra.Command{
 		fmt.Printf("Creator: %d\n", doc.Creator)
 		fmt.Println()
 
-		var pages []api.DocPage
-		if err := client.GetV3(endpoint+"/pages", nil, &pages); err != nil {
-			return fmt.Errorf("reading document pages: %w", err)
+		if len(args) == 2 {
+			pageID := args[1]
+			var page api.DocPage
+			if err := client.GetV3(fmt.Sprintf("%s/pages/%s", docEndpoint, pageID), nil, &page); err != nil {
+				return fmt.Errorf("reading page: %w", err)
+			}
+			printPages([]api.DocPage{page}, 0)
+		} else {
+			var pages []api.DocPage
+			if err := client.GetV3(docEndpoint+"/pages", nil, &pages); err != nil {
+				return fmt.Errorf("reading document pages: %w", err)
+			}
+			if len(pages) == 0 {
+				fmt.Println("(No pages)")
+				return nil
+			}
+			printPages(pages, 0)
 		}
 
-		if len(pages) == 0 {
-			fmt.Println("(No pages)")
-			return nil
-		}
-
-		printPages(pages, 0)
 		return nil
 	},
 }
